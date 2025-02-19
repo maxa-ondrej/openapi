@@ -13,12 +13,12 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: write
-      id-token: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+      - name: Setup Git user
+        run: git config --global user.email "ondrej.maxa11@gmail.com" && git config --global user.name "Ondřej Maxa"
       - name: Install dependencies
         uses: ./.github/actions/setup
       - name: Create Release Pull Request or Publish
@@ -26,6 +26,7 @@ jobs:
         with:
           version: pnpm changeset:version
           publish: pnpm changeset:publish
+          setupGitUser: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
