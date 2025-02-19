@@ -7,10 +7,8 @@
     }
   ],
   "commit": false,
-  "fixed": [],
-  "linked": [
-    ["@majksa-openapi/effect-heyapi-plugin", "@majksa-openapi/effect"]
-  ],
+  "fixed": [["@majksa-openapi/effect-heyapi-plugin", "@majksa-openapi/effect"]],
+  "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
