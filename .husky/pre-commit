@@ -1,0 +1,3 @@
+pnpm lint
+pnpm check
+pnpm run test --watch=false

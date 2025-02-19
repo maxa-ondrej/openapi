@@ -1,0 +1,45 @@
+{
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.10.0",
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "build": "tsc -b tsconfig.build.json && pnpm --recursive --parallel run build",
+    "check": "tsc -b tsconfig.json",
+    "check:recursive": "pnpm --recursive exec tsc -b tsconfig.json",
+    "lint": "biome check",
+    "format": "biome check --fix",
+    "test": "vitest",
+    "coverage": "vitest --coverage",
+    "changeset:create": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "pnpm build && TEST_DIST= pnpm vitest && changeset publish",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.25.9",
+    "@babel/core": "^7.26.0",
+    "@babel/plugin-transform-export-namespace-from": "^7.25.9",
+    "@babel/plugin-transform-modules-commonjs": "^7.25.9",
+    "@biomejs/biome": "1.9.4",
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.8",
+    "@effect/build-utils": "^0.7.7",
+    "@effect/language-service": "^0.2.0",
+    "@effect/vitest": "latest",
+    "@types/node": "^22.8.5",
+    "babel-plugin-annotate-pure-calls": "^0.4.0",
+    "effect": "^3.10.7",
+    "glob": "^11.0.0",
+    "husky": "9.1.7",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "vitest": "^2.0.5"
+    },
+    "patchedDependencies": {}
+  }
+}

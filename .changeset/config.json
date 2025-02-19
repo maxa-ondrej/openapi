@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.2/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "maxa-ondrej/openapi"
+    }
+  ],
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    ["@majksa-openapi/effect-heyapi-plugin", "@majksa-openapi/effect"]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
