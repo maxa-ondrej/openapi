@@ -1,5 +1,11 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.1.1
+
+### Patch Changes
+
+- [`6138c90`](https://github.com/maxa-ondrej/openapi/commit/6138c90108d5a5a35c5e8bc202d21f64a02532db) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - fix renaming the sdk package
+
 ## 0.1.0
 
 ### Minor Changes
