@@ -12,7 +12,7 @@
     "test": "vitest",
     "coverage": "vitest --coverage",
     "changeset:create": "changeset",
-    "changeset:version": "changeset version",
+    "changeset:version": "biome check && changeset version && biome check --fix",
     "changeset:publish": "pnpm build && TEST_DIST= pnpm vitest && changeset publish",
     "prepare": "husky"
   },

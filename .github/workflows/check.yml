@@ -1,6 +1,7 @@
 name: Check
 on:
-  workflow_dispatch: null
+  workflow_dispatch:
+  merge_group:
   pull_request:
     branches:
       - main

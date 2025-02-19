@@ -18,5 +18,14 @@
     "test": "vitest",
     "coverage": "vitest --coverage"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@hey-api/openapi-ts": "0.64.4",
+    "@effect/platform": "0.75.1",
+    "effect": "3.12.7"
+  },
+  "effect": {
+    "generateExports": {
+      "exclude": ["**"]
+    }
+  }
 }
