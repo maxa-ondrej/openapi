@@ -1,5 +1,11 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.1.3
+
+### Patch Changes
+
+- [`de7faaf`](https://github.com/maxa-ondrej/openapi/commit/de7faafc1bd4c9778921d007278c4fd83ee11bf5) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - specify publish directory
+
 ## 0.1.2
 
 ### Patch Changes
