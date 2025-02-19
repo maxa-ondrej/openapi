@@ -9,6 +9,10 @@
     "url": "https://github.com/maxa-ondrej/openapi",
     "directory": "packages/effect-heyapi-plugin"
   },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "scripts": {
     "build": "pnpm build-esm && pnpm build-annotate && pnpm build-cjs && build-utils pack-v2",
     "build-esm": "tsc -b tsconfig.build.json",

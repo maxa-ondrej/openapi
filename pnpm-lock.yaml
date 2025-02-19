@@ -87,6 +87,7 @@ importers:
       effect:
         specifier: 3.12.7
         version: 3.12.7
+    publishDirectory: dist
 
 packages:
 
