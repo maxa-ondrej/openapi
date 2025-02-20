@@ -84,6 +84,9 @@ importers:
       '@hey-api/openapi-ts':
         specifier: 0.64.4
         version: 0.64.4(typescript@5.7.3)
+      '@majksa-openapi/effect':
+        specifier: workspace:*
+        version: link:../effect/dist
       effect:
         specifier: 3.12.7
         version: 3.12.7
