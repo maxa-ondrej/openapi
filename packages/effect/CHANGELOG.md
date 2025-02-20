@@ -1,5 +1,11 @@
 # @majksa-openapi/effect
 
+## 0.2.0
+
+### Minor Changes
+
+- [#7](https://github.com/maxa-ondrej/openapi/pull/7) [`29a996b`](https://github.com/maxa-ondrej/openapi/commit/29a996b07d8934aec4aaa64e6fb92178331310c3) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - Generate schemas for error responses and provide utilities for handling errors statuses.
+
 ## 0.1.3
 
 ## 0.1.2
