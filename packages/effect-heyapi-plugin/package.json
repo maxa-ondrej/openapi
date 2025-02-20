@@ -20,12 +20,14 @@
     "build-annotate": "babel build/esm --plugins annotate-pure-calls --out-dir build/esm --source-maps",
     "check": "tsc -b tsconfig.json",
     "test": "vitest",
-    "coverage": "vitest --coverage"
+    "coverage": "vitest --coverage",
+    "generate:client": "openapi-ts --logs tmp/logs"
   },
   "dependencies": {
     "@hey-api/openapi-ts": "0.64.4",
     "@effect/platform": "0.75.1",
-    "effect": "3.12.7"
+    "effect": "3.12.7",
+    "@majksa-openapi/effect": "workspace:*"
   },
   "effect": {
     "generateExports": {

@@ -17,7 +17,10 @@ export const createObject = (
   Effect.try(() =>
     ts.factory.createObjectLiteralExpression(
       properties.map(([key, value]) =>
-        ts.factory.createPropertyAssignment(key, value),
+        ts.factory.createPropertyAssignment(
+          ts.factory.createStringLiteral(key),
+          value,
+        ),
       ),
       true,
     ),

@@ -23,3 +23,8 @@ export type IRPathItemObject = NonNullable<IR['paths']>[`/${string}`];
 
 // biome-ignore lint/style/useNamingConvention: <explanation>
 export type IROperationObject = NonNullable<IRPathItemObject['get']>;
+
+// biome-ignore lint/style/useNamingConvention: <explanation>
+export type IRResponseObject = NonNullable<
+  NonNullable<IROperationObject['responses']>[string]
+>;

@@ -16,7 +16,11 @@ import { ApiDevContext, type OnOperation } from '../adapter/index.js';
 import { Function, Module, Struct } from '../compiler/index.js';
 import { defaultConfig } from '../config.js';
 import { Comment, Naming } from '../override/index.js';
-import type { IROperationObject, IRPathItemObject } from '../override/types.js';
+import type {
+  IROperationObject,
+  IRPathItemObject,
+  IRResponseObject,
+} from '../override/types.js';
 import {
   generateRoot,
   responseNamespace,
@@ -29,9 +33,13 @@ type DataSchemas = {
   query: Option.Option<Record<string, ts.Expression>>;
   body: Option.Option<ts.Expression>;
   response: ts.Expression;
+  errors: ts.Expression;
 };
 
 const requestNamespace = ts.factory.createIdentifier('Request');
+
+const createEmptyBody = () =>
+  Function.createMethodCall(requestNamespace, 'emptyBody')([]);
 
 const generateParamSchema = (
   schemas: Option.Option<Record<string, ts.Expression>>,
@@ -49,26 +57,23 @@ const generateParamSchema = (
   );
 
 const createFetch =
-  (isStreamed: boolean) => (data: DataSchemas) => (wrapperName: string) =>
-    pipe(
-      data,
-      Effect.succeed,
+  (isStreamed: boolean, data: DataSchemas) => (wrapperName: string) =>
+    Effect.succeed(data).pipe(
       Effect.bind('pathSchema', ({ path }) => generateParamSchema(path)),
       Effect.bind('querySchema', ({ query }) => generateParamSchema(query)),
       Effect.bind('bodySchema', ({ body }) =>
         body.pipe(
           Option.map(Effect.succeed),
-          Option.getOrElse(() =>
-            Function.createMethodCall(requestNamespace, 'emptyBody')([]),
-          ),
+          Option.getOrElse(createEmptyBody),
         ),
       ),
-      Effect.map(({ pathSchema, querySchema, bodySchema, response }) =>
+      Effect.map(({ pathSchema, querySchema, bodySchema, response, errors }) =>
         Array.make(
           Tuple.make('pathParamsEncoder', pathSchema),
           Tuple.make('queryParamsEncoder', querySchema),
           Tuple.make('bodyEncoder', bodySchema),
           Tuple.make('responseDecoder', response),
+          Tuple.make('errorsDecoder', errors),
         ),
       ),
       Effect.andThen(Struct.createObject),
@@ -286,21 +291,45 @@ const extractResponse = (operation: IROperationObject) =>
         Option.orElse(() => Option.fromNullable(responses.default)),
       ),
     ),
-    Option.map((first) =>
-      Tuple.make(
-        first,
-        first.mediaType
-          ? MediaType.isStreamed(MediaType.parse(first.mediaType))
-          : false,
-      ),
-    ),
-    Option.map(Tuple.mapFirst((object) => generateRoot(object.schema))),
+    Option.map(mapResponse),
     Option.getOrElse(() =>
-      Tuple.make(
-        Function.createMethodCall(responseNamespace, 'empty')([]),
-        false,
+      Function.createMethodCall(
+        responseNamespace,
+        'empty',
+      )([]).pipe(Effect.map((node) => Tuple.make(node, false))),
+    ),
+  );
+
+const extractErrors = (operation: IROperationObject) =>
+  pipe(
+    operation.responses,
+    Option.fromNullable,
+    Option.map((responses) =>
+      pipe(
+        responses,
+        Record.filterMap(Option.fromNullable),
+        Record.toEntries,
+        Array.filter(([key]) => !key.startsWith('2')),
       ),
     ),
+    Option.getOrElse(Array.empty),
+    Array.map(Tuple.mapSecond(mapResponse)),
+    Array.map(([key, effect]) =>
+      effect.pipe(Effect.map(([node]) => Tuple.make(key, node))),
+    ),
+    Effect.all,
+    Effect.andThen(Struct.createObject),
+  );
+
+const mapResponse = (operation: IRResponseObject) =>
+  pipe(
+    Tuple.make(
+      operation,
+      operation.mediaType
+        ? MediaType.isStreamed(MediaType.parse(operation.mediaType))
+        : false,
+    ),
+    Tuple.mapFirst((object) => generateRoot(object.schema)),
     ([effect, isStreamed]) =>
       Effect.map(effect, (node) => Tuple.make(node, isStreamed)),
   );
@@ -332,8 +361,9 @@ export const operation: OnOperation = ({ operation, method, path }) =>
       query: yield* extractQuery(operation),
       body: yield* extractBody(operation),
       response,
+      errors: yield* extractErrors(operation),
     } satisfies DataSchemas;
-    const createableFetch = createFetch(streamed)(data);
+    const createableFetch = createFetch(streamed, data);
     const useableFetch = useFetch(path, knownMethod, data);
     const node = yield* combineToOperation(
       createableFetch,

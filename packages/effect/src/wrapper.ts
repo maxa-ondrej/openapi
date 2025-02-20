@@ -4,6 +4,7 @@ import {
   HttpClient,
   type HttpClientError,
   HttpClientRequest,
+  HttpClientResponse,
   type HttpMethod,
 } from '@effect/platform';
 import {
@@ -19,6 +20,7 @@ import {
   pipe,
 } from 'effect';
 import { Config } from './config.js';
+import { ApiError } from './response/errors.js';
 import { parseStream, parseSync } from './response/index.js';
 import { RecordFrom } from './schema.js';
 
@@ -35,18 +37,37 @@ type Data<P, Q, B> = {
   (Q extends void ? object : { readonly query: Q }) &
   (B extends void ? object : { readonly body: B });
 
-type Schemas<Path, Query, Body, P, Q, Response, R> = {
+type Schemas<
+  Path,
+  Query,
+  Body,
+  P,
+  Q,
+  Response,
+  R,
+  E extends Record<string, Schema.Schema.AnyNoContext>,
+> = {
   pathParamsEncoder: Schema.Schema<Path, P>;
   queryParamsEncoder: Schema.Schema<Query, Q>;
   bodyEncoder: Schema.Schema<Body, HttpBody.HttpBody>;
   responseDecoder: Schema.Schema<Response, R>;
+  errorsDecoder: E;
 };
 
 export class Wrapper extends Context.Tag('ApiClientEffectWrapper')<
   Wrapper,
   {
-    fetch: <Path, Query, Body, P, Q, Response, R>(
-      schemas: Schemas<Path, Query, Body, P, Q, Response, R>,
+    fetch: <
+      Path,
+      Query,
+      Body,
+      P,
+      Q,
+      Response,
+      R,
+      E extends Record<string, Schema.Schema.AnyNoContext>,
+    >(
+      schemas: Schemas<Path, Query, Body, P, Q, Response, R, E>,
     ) => (
       data: BaseData<Path, Query, Body>,
     ) => (
@@ -55,11 +76,21 @@ export class Wrapper extends Context.Tag('ApiClientEffectWrapper')<
       Response,
       | HttpBody.HttpBodyError
       | HttpClientError.HttpClientError
-      | ParseResult.ParseError,
+      | ParseResult.ParseError
+      | ApiError<E>,
       HttpClient.HttpClient | Config
     >;
-    subscribe: <Path, Query, Body, P, Q, Response, R>(
-      schemas: Schemas<Path, Query, Body, P, Q, Response, R>,
+    subscribe: <
+      Path,
+      Query,
+      Body,
+      P,
+      Q,
+      Response,
+      R,
+      E extends Record<string, Schema.Schema.AnyNoContext>,
+    >(
+      schemas: Schemas<Path, Query, Body, P, Q, Response, R, E>,
     ) => (
       base: BaseData<Path, Query, Body>,
     ) => (
@@ -71,7 +102,8 @@ export class Wrapper extends Context.Tag('ApiClientEffectWrapper')<
       >,
       | HttpBody.HttpBodyError
       | HttpClientError.HttpClientError
-      | ParseResult.ParseError,
+      | ParseResult.ParseError
+      | ApiError<E>,
       HttpClient.HttpClient | Config
     >;
   }
@@ -107,11 +139,21 @@ export const createPathFromTemplate = (
   );
 
 const executeRequest =
-  <Path, Query, Body, P, Q, Response, R>({
+  <
+    Path,
+    Query,
+    Body,
+    P,
+    Q,
+    Response,
+    R,
+    E extends Record<string, Schema.Schema.AnyNoContext>,
+  >({
     bodyEncoder,
     pathParamsEncoder,
     queryParamsEncoder,
-  }: Schemas<Path, Query, Body, P, Q, Response, R>) =>
+    errorsDecoder,
+  }: Schemas<Path, Query, Body, P, Q, Response, R, E>) =>
   (base: BaseData<Path, Query, Body>) =>
   (data: Data<Path, Query, Body>) =>
     HttpClient.HttpClient.pipe(
@@ -158,6 +200,17 @@ const executeRequest =
         ),
       ),
       Effect.andThen(({ client, request }) => client.execute(request)),
+      Effect.andThen(
+        HttpClientResponse.matchStatus({
+          '2xx': (response) => Effect.succeed(response),
+          orElse: (response) =>
+            Effect.andThen(response.json, (error) =>
+              Effect.fail(
+                new ApiError(errorsDecoder, error, response.status.toString()),
+              ),
+            ),
+        }),
+      ),
     );
 
 export const WrapperLive = Layer.succeed(
