@@ -16,6 +16,7 @@ export default {
       name: 'effect',
       baseUrl: 'https://petstore3.swagger.io/api/v3',
       provideLayers: false,
+      staleTime: '1 minute',
     }),
   ],
 };

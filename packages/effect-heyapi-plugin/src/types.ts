@@ -1,3 +1,5 @@
+import type { Duration } from 'effect';
+
 export interface Config {
   /**
    * Plugin name. Must be unique.
@@ -12,6 +14,10 @@ export interface Config {
    * Base URL of the API.
    */
   baseUrl?: string;
+  /**
+   * Base URL of the API.
+   */
+  staleTime?: Duration.DurationInput & string;
   /**
    * Should the effect layers be provided automatically.
    * @default true

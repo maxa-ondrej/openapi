@@ -1,4 +1,4 @@
-import { Array, Effect, Record, String, Tuple, pipe } from 'effect';
+import { Array, Effect, Option, Record, String, Tuple, pipe } from 'effect';
 import ts from 'typescript';
 import { ApiDevContext, type OnBefore } from '../adapter/index.js';
 import { Function, Module, Struct } from '../compiler/index.js';
@@ -37,7 +37,18 @@ const createAppLayer = () =>
         (value) => Tuple.make('baseUrl', value),
       ),
     ),
-    Effect.bind('apiConfig', ({ baseUrl }) => Struct.createObject([baseUrl])),
+    Effect.let('staleTime', ({ plugin }) =>
+      pipe(
+        plugin.staleTime,
+        Option.fromNullable,
+        Option.map(ts.factory.createStringLiteral),
+        Option.getOrElse(() => ts.factory.createVoidZero()),
+        (value) => Tuple.make('staleTime', value),
+      ),
+    ),
+    Effect.bind('apiConfig', ({ baseUrl, staleTime }) =>
+      Struct.createObject([baseUrl, staleTime]),
+    ),
     Effect.let('layers', ({ apiConfig }) =>
       Array.make(
         Function.createMethodCall(
