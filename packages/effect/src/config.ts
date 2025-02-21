@@ -1,12 +1,17 @@
 import { Headers } from '@effect/platform';
-import { Context, Layer, Ref } from 'effect';
+import { Context, Duration, Layer, Option, Ref } from 'effect';
 
 export type ApiConfig = {
   baseUrl: string;
-  headers: Headers.Input;
+  staleTime: Option.Option<Duration.Duration>;
+  headers: Headers.Headers;
 };
 
-type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type ApiConfigInput = {
+  baseUrl: string;
+  staleTime?: Duration.DurationInput;
+  headers?: Headers.Input;
+};
 
 export class Config extends Context.Tag('ApiClientConfig')<
   Config,
@@ -16,8 +21,15 @@ export class Config extends Context.Tag('ApiClientConfig')<
 export const layer = ({
   baseUrl,
   headers = Headers.empty,
-}: Optional<ApiConfig, 'headers'>) =>
-  Ref.make({
-    baseUrl,
-    headers,
-  }).pipe(Layer.effect(Config));
+  staleTime,
+}: ApiConfigInput) =>
+  Layer.effect(
+    Config,
+    Ref.make({
+      baseUrl,
+      headers: Headers.fromInput(headers),
+      staleTime: Option.fromNullable(staleTime).pipe(
+        Option.map(Duration.decode),
+      ),
+    }),
+  );

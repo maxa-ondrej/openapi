@@ -21,17 +21,21 @@
     "check": "tsc -b tsconfig.json",
     "test": "vitest",
     "coverage": "vitest --coverage",
-    "generate:client": "openapi-ts --logs tmp/logs"
+    "generate:client": "openapi-ts --logs tmp/logs",
+    "run-client": "tsx tmp/index.ts"
   },
   "dependencies": {
-    "@hey-api/openapi-ts": "0.64.4",
     "@effect/platform": "0.75.1",
-    "effect": "3.12.7",
-    "@majksa-openapi/effect": "workspace:*"
+    "@hey-api/openapi-ts": "0.64.4",
+    "@majksa-openapi/effect": "workspace:*",
+    "effect": "3.12.7"
   },
   "effect": {
     "generateExports": {
       "exclude": ["**"]
     }
+  },
+  "devDependencies": {
+    "@effect/platform-node": "0.73.2"
   }
 }

@@ -14,7 +14,7 @@ export default {
   plugins: [
     Effect.defineConfig({
       name: 'effect',
-      baseUrl: 'https://api.example.com',
+      baseUrl: 'https://petstore3.swagger.io/api/v3',
       provideLayers: false,
     }),
   ],

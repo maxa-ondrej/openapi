@@ -1,4 +1,5 @@
 import {
+  type Error,
   Headers,
   type HttpBody,
   HttpClient,
@@ -6,9 +7,12 @@ import {
   HttpClientRequest,
   HttpClientResponse,
   type HttpMethod,
+  KeyValueStore,
 } from '@effect/platform';
 import {
   Context,
+  DateTime,
+  Duration,
   Effect,
   Layer,
   Option,
@@ -20,6 +24,7 @@ import {
   pipe,
 } from 'effect';
 import { Config } from './config.js';
+import { ApiConfig } from './index.js';
 import { ApiError } from './response/errors.js';
 import { parseStream, parseSync } from './response/index.js';
 import { RecordFrom } from './schema.js';
@@ -71,14 +76,15 @@ export class Wrapper extends Context.Tag('ApiClientEffectWrapper')<
     ) => (
       data: BaseData<Path, Query, Body>,
     ) => (
-      data: Data<Path, Query, Body>,
+      data: Data<Path, Query, Body> & { staleTime?: Duration.DurationInput },
     ) => Effect.Effect<
       Response,
       | HttpBody.HttpBodyError
       | HttpClientError.HttpClientError
       | ParseResult.ParseError
-      | ApiError<E>,
-      HttpClient.HttpClient | Config
+      | ApiError<E>
+      | Error.PlatformError,
+      HttpClient.HttpClient | Config | KeyValueStore.KeyValueStore
     >;
     subscribe: <
       Path,
@@ -157,6 +163,7 @@ const executeRequest =
   (base: BaseData<Path, Query, Body>) =>
   (data: Data<Path, Query, Body>) =>
     HttpClient.HttpClient.pipe(
+      Effect.tap(() => Effect.logDebug('🚀 Executing Request')),
       Effect.bindTo('client'),
       Effect.bind('config', () => Config.pipe(Effect.andThen(Ref.get))),
       Effect.tap(({ config }) => Effect.logDebug('⚙️ Api Config', config)),
@@ -192,13 +199,11 @@ const executeRequest =
           HttpClientRequest.setBody(body),
           HttpClientRequest.appendUrlParams(query),
           HttpClientRequest.setHeaders(
-            Headers.merge(
-              Headers.fromInput(config.headers),
-              Headers.fromInput(data.headers),
-            ),
+            Headers.merge(config.headers, Headers.fromInput(data.headers)),
           ),
         ),
       ),
+      Effect.let('queryKey', ({ request }) => request.hash),
       Effect.andThen(({ client, request }) => client.execute(request)),
       Effect.andThen(
         HttpClientResponse.matchStatus({
@@ -217,13 +222,49 @@ export const WrapperLive = Layer.succeed(
   Wrapper,
   Wrapper.of({
     fetch: (schemas) => (base) => (data) =>
-      executeRequest(schemas)(base)(data).pipe(
-        Effect.andThen(parseSync),
-        Effect.andThen((response) =>
-          pipe(response, Schema.decodeUnknown(schemas.responseDecoder)),
-        ),
-        Effect.scoped,
-      ),
+      Effect.gen(function* () {
+        const kv = yield* KeyValueStore.KeyValueStore;
+        const store = kv.forSchema(
+          Schema.Struct({
+            date: Schema.DateTimeUtc,
+            data: schemas.responseDecoder,
+          }),
+        );
+        const config = yield* Effect.flatten(ApiConfig.Config);
+        const staleTime = Option.orElse(config.staleTime, () =>
+          Option.fromNullable(data.staleTime).pipe(Option.map(Duration.decode)),
+        );
+        const mergedInput = {
+          ...base,
+          ...data,
+          staleTime: undefined,
+        };
+        const queryKey = JSON.stringify(mergedInput);
+        const cached = yield* store.get(queryKey);
+        if (Option.isSome(cached)) {
+          const { date, data: response } = cached.value;
+          if (
+            Option.isSome(staleTime) &&
+            DateTime.isFuture(DateTime.addDuration(date, staleTime.value))
+          ) {
+            return response;
+          }
+        }
+        const response = yield* executeRequest(schemas)(base)(data).pipe(
+          Effect.andThen(parseSync),
+          Effect.andThen((response) =>
+            pipe(response, Schema.decodeUnknown(schemas.responseDecoder)),
+          ),
+          Effect.scoped,
+        );
+        if (Option.isSome(staleTime)) {
+          yield* store.set(queryKey, {
+            date: yield* DateTime.now,
+            data: response,
+          });
+        }
+        return response;
+      }),
     subscribe: (schemas) => (base) => (data) =>
       executeRequest(schemas)(base)(data).pipe(
         Effect.andThen(parseStream),
