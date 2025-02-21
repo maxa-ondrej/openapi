@@ -1,5 +1,14 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.3.1
+
+### Patch Changes
+
+- [`9ec2ae5`](https://github.com/maxa-ondrej/openapi/commit/9ec2ae5087d51ee306dfd67357cad6aba258fc2d) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - allow providing default stale time in plugin config
+
+- Updated dependencies []:
+  - @majksa-openapi/effect@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
