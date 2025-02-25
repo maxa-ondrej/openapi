@@ -112,7 +112,15 @@ const generateRootInner = (
                 Struct.createPropertyAccess(schemaNamespace, 'DateFromString'),
               ),
               Match.when('date', () =>
-                Struct.createPropertyAccess(schemaNamespace, 'DateFromString'),
+                Struct.createPropertyAccess(
+                  schemaNamespace,
+                  'DateFromString',
+                ).pipe(
+                  Effect.map(Array.of),
+                  Effect.andThen(
+                    Function.createMethodCall(responseNamespace, 'ignoreTime'),
+                  ),
+                ),
               ),
               Match.when('uuid', () =>
                 Struct.createPropertyAccess(schemaNamespace, 'UUID'),
