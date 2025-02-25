@@ -1,5 +1,14 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.3.2
+
+### Patch Changes
+
+- [`31e15ce`](https://github.com/maxa-ondrej/openapi/commit/31e15ce3ed1db3ef7128d686b81ebdb0675bd50a) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - fix date without time generation
+
+- Updated dependencies [[`31e15ce`](https://github.com/maxa-ondrej/openapi/commit/31e15ce3ed1db3ef7128d686b81ebdb0675bd50a)]:
+  - @majksa-openapi/effect@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes
