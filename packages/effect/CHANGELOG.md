@@ -1,5 +1,11 @@
 # @majksa-openapi/effect
 
+## 0.3.3
+
+### Patch Changes
+
+- [`a987d12`](https://github.com/maxa-ondrej/openapi/commit/a987d122ea1073c22e9bb119a520d8881c90ab93) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - add debug info and fix cache stale time
+
 ## 0.3.2
 
 ### Patch Changes
