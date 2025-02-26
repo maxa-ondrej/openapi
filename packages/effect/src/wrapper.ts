@@ -223,7 +223,9 @@ export const WrapperLive = Layer.succeed(
   Wrapper.of({
     fetch: (schemas) => (base) => (data) =>
       Effect.gen(function* () {
-        const kv = yield* KeyValueStore.KeyValueStore;
+        const kv = KeyValueStore.prefix('majksa.openapi.effect:')(
+          yield* KeyValueStore.KeyValueStore,
+        );
         const store = kv.forSchema(
           Schema.Struct({
             date: Schema.DateTimeUtc,
