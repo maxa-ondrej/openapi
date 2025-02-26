@@ -231,21 +231,37 @@ export const WrapperLive = Layer.succeed(
           }),
         );
         const config = yield* Effect.flatten(ApiConfig.Config);
-        const staleTime = Option.orElse(config.staleTime, () =>
-          Option.fromNullable(data.staleTime).pipe(Option.map(Duration.decode)),
+        const staleTime = Option.fromNullable(data.staleTime).pipe(
+          Option.map(Duration.decode),
+          Option.orElse(() => config.staleTime),
         );
+        Effect.logDebug('🔍 Stale Time', staleTime);
         const mergedInput = {
           ...base,
           ...data,
           staleTime: undefined,
         };
         const queryKey = JSON.stringify(mergedInput);
+        Effect.logDebug('🔍 Query Key', queryKey);
         const cached = yield* store.get(queryKey);
         if (Option.isSome(cached)) {
+          Effect.logDebug('🔍 Cache Hit');
           const { date, data: response } = cached.value;
+          Effect.logDebug(
+            '🔍 Cache Date',
+            date,
+            Option.isSome(staleTime) &&
+              (yield* DateTime.isFuture(
+                DateTime.addDuration(date, staleTime.value),
+              ))
+              ? '🥦 FRESH'
+              : '🍅 STALE',
+          );
           if (
             Option.isSome(staleTime) &&
-            DateTime.isFuture(DateTime.addDuration(date, staleTime.value))
+            (yield* DateTime.isFuture(
+              DateTime.addDuration(date, staleTime.value),
+            ))
           ) {
             return response;
           }
