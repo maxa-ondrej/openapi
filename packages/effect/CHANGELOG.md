@@ -1,5 +1,11 @@
 # @majksa-openapi/effect
 
+## 0.3.4
+
+### Patch Changes
+
+- [`8fb2b5a`](https://github.com/maxa-ondrej/openapi/commit/8fb2b5a568163bd4086cf8445b57702fe016a1c7) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - add keystore prefix
+
 ## 0.3.3
 
 ### Patch Changes
