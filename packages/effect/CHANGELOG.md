@@ -1,5 +1,11 @@
 # @majksa-openapi/effect
 
+## 0.3.5
+
+### Patch Changes
+
+- [`5f12d3f`](https://github.com/maxa-ondrej/openapi/commit/5f12d3f221439bb7f2d729bac3080f993bba6085) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - bump effect version
+
 ## 0.3.4
 
 ### Patch Changes
