@@ -24,7 +24,7 @@
     "generate:client": "openapi-ts --logs tmp/logs",
     "run-client": "tsx tmp/index.ts"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@effect/platform": "0.77.2",
     "@hey-api/openapi-ts": "0.64.4",
     "@majksa-openapi/effect": "workspace:*",
