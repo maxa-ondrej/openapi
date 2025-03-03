@@ -1,5 +1,11 @@
 # @majksa-openapi/effect
 
+## 0.3.6
+
+### Patch Changes
+
+- [`764c74b`](https://github.com/maxa-ondrej/openapi/commit/764c74bb5125d5bb492290c15e4d0850120ea5a1) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - pin effect version and make the dependencies peer
+
 ## 0.3.5
 
 ### Patch Changes
