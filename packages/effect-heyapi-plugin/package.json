@@ -25,10 +25,11 @@
     "run-client": "tsx tmp/index.ts"
   },
   "peerDependencies": {
-    "@effect/platform": "0.77.4",
-    "@hey-api/openapi-ts": "0.64.4",
+    "@effect/platform": "0.77.6",
+    "@hey-api/openapi-ts": "0.64.6",
     "@majksa-openapi/effect": "workspace:*",
-    "effect": "3.13.4"
+    "effect": "3.13.4",
+    "typescript": "5.8.2"
   },
   "effect": {
     "generateExports": {
