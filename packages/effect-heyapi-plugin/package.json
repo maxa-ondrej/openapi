@@ -1,6 +1,6 @@
 {
   "name": "@majksa-openapi/effect-heyapi-plugin",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "type": "module",
   "license": "MIT",
   "description": "The server template",
