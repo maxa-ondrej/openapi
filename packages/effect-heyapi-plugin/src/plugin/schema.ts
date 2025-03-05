@@ -45,7 +45,7 @@ const int = Effect.Do.pipe(
     Function.createMethodCall(schemaNamespace, 'int')([]),
   ),
   Effect.andThen(({ number, int }) =>
-    Function.createFunctionCall(int)([number]),
+    Function.createMethodCall(number, 'pipe')([int]),
   ),
 );
 
