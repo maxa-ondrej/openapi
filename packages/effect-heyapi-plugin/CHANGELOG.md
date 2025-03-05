@@ -1,5 +1,14 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.3.9
+
+### Patch Changes
+
+- [`7ded653`](https://github.com/maxa-ondrej/openapi/commit/7ded653f00258be2de1e5c4fe8276b8200adef1f) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - fix infering intefer schema type
+
+- Updated dependencies []:
+  - @majksa-openapi/effect@0.3.9
+
 ## 0.3.8
 
 ### Patch Changes
