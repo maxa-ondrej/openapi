@@ -49,7 +49,7 @@ export const paginate =
   > =>
     Stream.paginateEffect(initialPage, (n) =>
       Effect.gen(function* () {
-        yield* Effect.logInfo('Paginate', { page, limit, firstPage });
+        yield* Effect.logDebug('Paginate', { page, limit, firstPage });
         const requestData = {
           ...data,
           query: {
