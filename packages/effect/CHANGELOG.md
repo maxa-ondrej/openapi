@@ -1,5 +1,13 @@
 # @majksa-openapi/effect
 
+## 0.3.10
+
+### Patch Changes
+
+- [`a5d4014`](https://github.com/maxa-ondrej/openapi/commit/a5d4014a5e35b26df01f8fc3d4b947518c82b6f6) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - paginate console log should have debug level
+
+- [`5f4442a`](https://github.com/maxa-ondrej/openapi/commit/5f4442a9e66a70e4d159529ef6799e2612bd4c14) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - bump depdendencies
+
 ## 0.3.9
 
 ## 0.3.8
