@@ -1,5 +1,5 @@
 ---
-"@majksa-openapi/effect-heyapi-plugin": minor
+"@majksa-openapi/effect-heyapi-plugin": patch
 ---
 
 generate defaults for query params
