@@ -1,5 +1,14 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.3.11
+
+### Patch Changes
+
+- [`725c773`](https://github.com/maxa-ondrej/openapi/commit/725c773fac64b443ac0e43764d2dcc35492911ba) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - generate defaults for query params
+
+- Updated dependencies []:
+  - @majksa-openapi/effect@0.3.11
+
 ## 0.3.10
 
 ### Patch Changes
