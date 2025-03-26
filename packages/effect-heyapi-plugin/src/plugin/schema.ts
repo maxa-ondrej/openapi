@@ -35,6 +35,8 @@ export const schema: OnSchema = ({ name, schema }) =>
   );
 
 export const schemaNamespace = ts.factory.createIdentifier('Schema');
+export const optionNamespace = ts.factory.createIdentifier('Option');
+export const requestNamespace = ts.factory.createIdentifier('Request');
 export const responseNamespace = ts.factory.createIdentifier('Response');
 
 const number = Struct.createPropertyAccess(schemaNamespace, 'Number');

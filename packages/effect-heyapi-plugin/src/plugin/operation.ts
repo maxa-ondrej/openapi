@@ -23,6 +23,8 @@ import type {
 } from '../override/types.js';
 import {
   generateRoot,
+  optionNamespace,
+  requestNamespace,
   responseNamespace,
   schemaNamespace,
   wrapOptional,
@@ -35,8 +37,6 @@ type DataSchemas = {
   response: ts.Expression;
   errors: ts.Expression;
 };
-
-const requestNamespace = ts.factory.createIdentifier('Request');
 
 const createEmptyBody = () =>
   Function.createMethodCall(requestNamespace, 'emptyBody')([]);
@@ -214,6 +214,39 @@ const extractParam = (
     }),
   );
 
+const extractParamDefault = (
+  params: Option.Option<
+    NonNullable<NonNullable<IROperationObject['parameters']>['query']>
+  >,
+) =>
+  params.pipe(
+    Option.andThen((param) =>
+      Record.isEmptyRecord(param) ? Option.none() : Option.some(param),
+    ),
+    Option.andThen(
+      Record.filterMap((object) =>
+        object.required
+          ? Option.none()
+          : Option.some(Function.createMethodCall(optionNamespace, 'none')([])),
+      ),
+    ),
+    Option.map(Record.toEntries),
+    Option.map(
+      Array.map(([key, value]) =>
+        value.pipe(Effect.map((value) => Tuple.make(key, value))),
+      ),
+    ),
+    Option.map(Effect.all),
+    Option.match({
+      onSome: (value) =>
+        value.pipe(
+          Effect.andThen(Struct.createObject),
+          Effect.map(Option.some),
+        ),
+      onNone: () => Effect.succeed(Option.none()),
+    }),
+  );
+
 const extractPath = (operation: IROperationObject) =>
   pipe(
     operation.parameters,
@@ -230,6 +263,15 @@ const extractQuery = (operation: IROperationObject) =>
     Option.map((object) => object.query),
     Option.andThen(Option.fromNullable),
     extractParam,
+  );
+
+const queryDefaults = (operation: IROperationObject) =>
+  pipe(
+    operation.parameters,
+    Option.fromNullable,
+    Option.map((object) => object.query),
+    Option.andThen(Option.fromNullable),
+    extractParamDefault,
   );
 
 const mapRequestEncode = Match.type<MediaType.MediaType>().pipe(
@@ -372,6 +414,15 @@ export const operation: OnOperation = ({ operation, method, path }) =>
       context.plugin.provideLayers ?? defaultConfig.provideLayers,
     ).pipe(Effect.andThen(Module.createConstExport(name)));
 
+    const defaults = yield* pipe(
+      Option.match(yield* queryDefaults(operation), {
+        onSome: (value) => [Tuple.make('query', value)],
+        onNone: () => [],
+      }),
+      Struct.createObject,
+      Effect.andThen(Module.createConstExport(name)),
+    );
+
     yield* Comment.addLeadingComments({
       node,
       comments: [
@@ -385,5 +436,6 @@ export const operation: OnOperation = ({ operation, method, path }) =>
       ],
     });
     yield* context.addToNamespace(tag, node);
+    yield* context.addToNamespace(`${tag}Defaults`, defaults);
     yield* Effect.logInfo(`< Finished processing operation ${operation.id}`);
   });
