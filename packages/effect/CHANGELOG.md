@@ -1,5 +1,11 @@
 # @majksa-openapi/effect
 
+## 0.3.12
+
+### Patch Changes
+
+- [`2173870`](https://github.com/maxa-ondrej/openapi/commit/217387078ec79fb7004a8a40ccfaf43e43ef8afa) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - update dependencies
+
 ## 0.3.11
 
 ## 0.3.10
