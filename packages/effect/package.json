@@ -23,8 +23,8 @@
     "coverage": "vitest --coverage"
   },
   "peerDependencies": {
-    "@effect/platform": "0.79.3",
-    "effect": "3.13.12"
+    "@effect/platform": "0.80.7",
+    "effect": "3.14.7"
   },
   "effect": {
     "generateExports": {
