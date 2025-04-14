@@ -5,8 +5,7 @@
   "scripts": {
     "clean": "node scripts/clean.mjs",
     "build": "tsc -b tsconfig.build.json && pnpm --recursive --parallel run build",
-    "check": "tsc -b tsconfig.json",
-    "check:recursive": "pnpm --recursive exec tsc -b tsconfig.json",
+    "check": "pnpm --recursive exec tsc -b tsconfig.json",
     "lint": "biome check",
     "format": "biome check --fix",
     "test": "vitest",
@@ -26,16 +25,16 @@
     "@changesets/cli": "^2.28.1",
     "@effect/build-utils": "0.7.9",
     "@effect/language-service": "0.6.0",
-    "@effect/platform": "0.80.7",
+    "@effect/platform": "0.80.8",
     "@effect/vitest": "0.20.7",
-    "@types/node": "^22.14.0",
+    "@types/node": "^22.14.1",
     "babel-plugin-annotate-pure-calls": "^0.4.0",
-    "effect": "3.14.7",
+    "effect": "3.14.8",
     "glob": "^11.0.1",
     "husky": "9.1.7",
     "tsx": "^4.19.3",
     "typescript": "5.8.2",
-    "vitest": "3.0.7"
+    "vitest": "3.0.8"
   },
   "pnpm": {
     "patchedDependencies": {}
