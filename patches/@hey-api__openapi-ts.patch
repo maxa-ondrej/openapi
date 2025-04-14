@@ -1,0 +1,25 @@
+diff --git a/dist/types.d-CuJUnztx.d.ts b/dist/types.d-CuJUnztx.d.ts
+index 19cc1253768fa883dbfc2f4cedb3cd7ee54effc2..99f2603fd5486921152fe55d8fee0556d7ca9b80 100644
+--- a/dist/types.d-CuJUnztx.d.ts
++++ b/dist/types.d-CuJUnztx.d.ts
+@@ -6468,7 +6468,7 @@ declare namespace Plugin {
+     };
+ 
+   export type DefineConfig<Config extends BaseConfig> = (
+-    config?: Plugin.UserConfig<Omit<Config, 'name'>>,
++    config?: Plugin.UserConfig<Config>,
+   ) => Omit<Plugin.Config<Config>, 'name'> & {
+     /**
+      * Cast name to `any` so it doesn't throw type error in `plugins` array.
+@@ -6539,10 +6539,7 @@ interface Config$i
+     Client.Config {}
+ 
+ type PluginHandler<ReturnType = void> = Plugin.Handler<
+-  Omit<
+-    Config$h | Config$k | Config$j | Config$i,
+-    'name'
+-  >,
++  Config$h | Config$k | Config$j | Config$i,
+   ReturnType
+ >;
+ 

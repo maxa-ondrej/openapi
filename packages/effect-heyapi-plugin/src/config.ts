@@ -15,7 +15,7 @@ export const defaultConfig: Plugin.Config<Config> &
   exportFromIndex: true,
 };
 
-export const defineConfig: Plugin.DefineConfig<Config> = (config) => ({
+export const defineConfig = (config: Omit<Config, 'name'>): Config => ({
   ...defaultConfig,
   ...config,
 });
