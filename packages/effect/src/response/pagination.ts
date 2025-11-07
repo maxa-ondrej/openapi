@@ -10,10 +10,7 @@ export type PaginationConfig<
   page: P;
   limit: L;
   firstPage: number;
-  getTotalPages: (props: {
-    limit: number;
-    response: Response;
-  }) => number;
+  getTotalPages: (props: { limit: number; response: Response }) => number;
   getPageData: (response: Response) => readonly Item[];
 };
 

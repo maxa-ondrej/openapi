@@ -1,6 +1,6 @@
 import { KeyValueStore } from '@effect/platform';
 import type { Plugin } from '@hey-api/openapi-ts';
-import { Effect, Layer, LogLevel, Logger, ManagedRuntime, Match } from 'effect';
+import { Effect, Layer, Logger, LogLevel, ManagedRuntime, Match } from 'effect';
 import type { IRContext } from '../override/types.js';
 import type { Config } from '../types.js';
 import * as ApiDevContext from './context.js';

@@ -1,20 +1,24 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false,
-    "ignore": ["dist", "node_modules", "src/routeTree.gen.ts"]
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space"
   },
-  "organizeImports": {
-    "enabled": true
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on",
+        "recommended": true
+      }
+    }
   },
   "linter": {
     "enabled": true,
@@ -30,23 +34,6 @@
         "noForEach": "off"
       },
       "style": {
-        "useNamingConvention": {
-          "level": "error",
-          "options": {
-            "strictCase": true,
-            "enumMemberCase": "PascalCase",
-            "requireAscii": true,
-            "conventions": [
-              {
-                "selector": {
-                  "kind": "function",
-                  "scope": "any"
-                },
-                "formats": ["PascalCase"]
-              }
-            ]
-          }
-        },
         "useFilenamingConvention": {
           "level": "error",
           "options": {

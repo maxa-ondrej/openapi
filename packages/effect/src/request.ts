@@ -1,5 +1,5 @@
 import { HttpBody } from '@effect/platform';
-import { Effect, Match, ParseResult, Schema, Stream, pipe } from 'effect';
+import { Effect, Match, ParseResult, pipe, Schema, Stream } from 'effect';
 
 export const emptyBody = () =>
   Schema.transformOrFail(Schema.declare(HttpBody.isHttpBody), Schema.Void, {

@@ -1,4 +1,4 @@
-import { Array, Effect, Record, pipe } from 'effect';
+import { Array, Effect, pipe, Record } from 'effect';
 import { ApiDevContext, type OnAfter } from '../adapter/index.js';
 import { Module } from '../compiler/index.js';
 

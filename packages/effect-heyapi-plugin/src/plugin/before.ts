@@ -1,4 +1,4 @@
-import { Array, Effect, Option, Record, String, Tuple, pipe } from 'effect';
+import { Array, Effect, Option, pipe, Record, String, Tuple } from 'effect';
 import ts from 'typescript';
 import { ApiDevContext, type OnBefore } from '../adapter/index.js';
 import { Function, Module, Struct } from '../compiler/index.js';

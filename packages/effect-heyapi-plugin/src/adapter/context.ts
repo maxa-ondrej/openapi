@@ -6,10 +6,10 @@ import {
   Layer,
   Option,
   type ParseResult,
+  pipe,
   Record,
   Schema,
   String,
-  pipe,
 } from 'effect';
 import type { NoSuchElementException } from 'effect/Cause';
 import type ts from 'typescript';

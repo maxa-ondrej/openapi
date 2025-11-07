@@ -1,5 +1,5 @@
 import { expect, it } from '@effect/vitest';
-import { createPathFromTemplate } from '@majksa-openapi/effect/wrapper';
+import { createPathFromTemplate } from './wrapper.js';
 
 it('extract callable', () => {
   expect(createPathFromTemplate('/hello', {})).toBe('/hello');

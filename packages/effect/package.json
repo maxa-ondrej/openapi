@@ -22,12 +22,14 @@
     "coverage": "vitest --coverage"
   },
   "peerDependencies": {
-    "@effect/platform": "0.80.8",
-    "effect": "3.14.8"
+    "@effect/platform": "0.93.0",
+    "effect": "3.19.2"
   },
   "effect": {
     "generateExports": {
-      "exclude": ["**"]
+      "exclude": [
+        "**"
+      ]
     }
   }
 }

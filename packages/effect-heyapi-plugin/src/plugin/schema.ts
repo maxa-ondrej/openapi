@@ -3,10 +3,10 @@ import {
   Effect,
   Match,
   Option,
+  pipe,
   Record,
   Schema,
   Tuple,
-  pipe,
 } from 'effect';
 import ts from 'typescript';
 import { ApiDevContext, type OnSchema } from '../adapter/index.js';

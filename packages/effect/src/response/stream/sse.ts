@@ -1,4 +1,4 @@
-import { Array, Effect, Stream, String, Tuple, pipe } from 'effect';
+import { Array, Effect, pipe, Stream, String, Tuple } from 'effect';
 import { jsonParse, mapStreamToString } from '../util.js';
 import type { ParseStream } from './index.js';
 

@@ -7,7 +7,7 @@ export const serviceFunctionIdentifier = ({
   id,
   operation,
 }: {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: too lazy to type
   config: any;
   handleIllegal?: boolean;
   id: string;

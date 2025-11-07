@@ -6,10 +6,10 @@ import {
   Match,
   Option,
   Order,
+  pipe,
   Record,
   String,
   Tuple,
-  pipe,
 } from 'effect';
 import ts from 'typescript';
 import { ApiDevContext, type OnOperation } from '../adapter/index.js';

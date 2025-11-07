@@ -3,9 +3,9 @@ import {
   Either,
   Match,
   ParseResult,
+  pipe,
   Record,
   Schema,
-  pipe,
 } from 'effect';
 
 export const ParseString = (value: unknown): string =>

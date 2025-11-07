@@ -24,18 +24,24 @@
     "run-client": "tsx tmp/index.ts"
   },
   "peerDependencies": {
-    "@effect/platform": "0.80.8",
+    "@effect/platform": "0.93.0",
     "@hey-api/openapi-ts": "0.66.4",
     "@majksa-openapi/effect": "workspace:*",
-    "effect": "3.14.8",
-    "typescript": "5.8.3"
+    "effect": "3.19.2",
+    "typescript": "5.9.3"
   },
   "effect": {
     "generateExports": {
-      "exclude": ["**"]
+      "exclude": [
+        "**"
+      ]
     }
   },
   "devDependencies": {
-    "@effect/platform-node": "0.76.12"
+    "@effect/cluster": "0.52.6",
+    "@effect/experimental": "0.57.0",
+    "@effect/platform-node": "0.100.0",
+    "@effect/rpc": "0.72.1",
+    "@effect/sql": "0.48.0"
   }
 }

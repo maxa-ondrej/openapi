@@ -17,11 +17,11 @@ import {
   Layer,
   Option,
   type ParseResult,
+  pipe,
   type Record,
   Ref,
   Schema,
   Stream,
-  pipe,
 } from 'effect';
 import { Config } from './config.js';
 import { ApiConfig } from './index.js';

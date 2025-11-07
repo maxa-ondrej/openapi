@@ -27,5 +27,5 @@ export const reservedTypeScriptKeywordsRegExp =
  * {@link} https://developer.mozilla.org/docs/Web/JavaScript/Reference/Lexical_grammar#identifiers
  */
 export const validTypescriptIdentifierRegExp =
-  // biome-ignore lint/suspicious/noMisleadingCharacterClass: <explanation>
+  // biome-ignore lint/suspicious/noMisleadingCharacterClass: false-positive
   /^[$_\p{ID_Start}][$\u200c\u200d\p{ID_Continue}]*$/u;
