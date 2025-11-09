@@ -1,6 +1,4 @@
-import { mergeConfig, type ViteUserConfigExport } from 'vitest/config';
-import shared from '../../vitest.shared.js';
+import { defineProject, mergeConfig } from 'vitest/config';
+import configShared from '../../vitest.shared.js';
 
-const config: ViteUserConfigExport = {};
-
-export default mergeConfig(shared, config);
+export default mergeConfig(configShared, defineProject({}));
