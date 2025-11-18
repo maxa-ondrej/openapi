@@ -16,23 +16,23 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@babel/cli": "8.0.0-alpha.17",
-    "@babel/core": "8.0.0-alpha.17",
-    "@babel/plugin-transform-export-namespace-from": "8.0.0-alpha.17",
-    "@babel/plugin-transform-modules-commonjs": "8.0.0-alpha.17",
-    "@biomejs/biome": "2.3.4",
+    "@babel/cli": "8.0.0-beta.3",
+    "@babel/core": "8.0.0-beta.3",
+    "@babel/plugin-transform-export-namespace-from": "8.0.0-beta.3",
+    "@babel/plugin-transform-modules-commonjs": "8.0.0-beta.3",
+    "@biomejs/biome": "2.3.6",
     "@changesets/changelog-github": "0.5.1",
     "@changesets/cli": "2.29.7",
     "@effect/build-utils": "0.8.9",
-    "@effect/language-service": "0.55.2",
-    "@effect/platform": "0.93.0",
+    "@effect/language-service": "0.56.0",
+    "@effect/platform": "0.93.3",
     "@effect/vitest": "0.27.0",
-    "@types/node": "24.10.0",
-    "effect": "3.19.2",
-    "glob": "11.0.3",
+    "@types/node": "24.10.1",
+    "effect": "3.19.4",
+    "glob": "12.0.0",
     "husky": "9.1.7",
     "tsx": "4.20.6",
     "typescript": "5.9.3",
-    "vitest": "4.0.8"
+    "vitest": "4.0.10"
   }
 }
