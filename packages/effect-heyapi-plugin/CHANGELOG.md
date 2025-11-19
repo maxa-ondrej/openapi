@@ -1,5 +1,14 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.3.15
+
+### Patch Changes
+
+- [`d014475`](https://github.com/maxa-ondrej/openapi/commit/d014475bac19b43a6fab8e5dff64d0f6bc7f6909) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - distinguish between handling optional and nullable values in schema and operation
+
+- Updated dependencies [[`d014475`](https://github.com/maxa-ondrej/openapi/commit/d014475bac19b43a6fab8e5dff64d0f6bc7f6909)]:
+  - @majksa-openapi/effect@0.3.15
+
 ## 0.3.14
 
 ### Patch Changes
