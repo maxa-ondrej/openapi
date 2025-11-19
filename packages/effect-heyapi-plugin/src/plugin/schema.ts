@@ -53,17 +53,8 @@ const int = Effect.Do.pipe(
 
 export const wrapOptional = (
   value: Effect.Effect<ts.Expression, string, ApiDevContext.ApiDevContext>,
-  doubleWrap = true,
 ) =>
-  (doubleWrap
-    ? value.pipe(
-        Effect.map(Array.of),
-        Effect.andThen(
-          Function.createMethodCall(schemaNamespace, 'OptionFromNullOr'),
-        ),
-      )
-    : value
-  ).pipe(
+  value.pipe(
     Array.of,
     Array.append(
       Struct.createObject([
@@ -262,7 +253,12 @@ const generateRootInner = (
             Effect.andThen((op) =>
               Match.value(op).pipe(
                 Match.when('or', () =>
-                  Function.createMethodCall(schemaNamespace, 'Union'),
+                  schema.items?.find((value) => value.type === 'null')
+                    ? Function.createMethodCall(
+                        schemaNamespace,
+                        'OptionFromNullOr',
+                      )
+                    : Function.createMethodCall(schemaNamespace, 'Union'),
                 ),
                 Match.when('and', () =>
                   Function.createMethodCall(schemaNamespace, 'Union'),
@@ -270,7 +266,7 @@ const generateRootInner = (
                 Match.exhaustive,
                 (fn) =>
                   pipe(
-                    schema.items,
+                    schema.items?.filter((item) => item.type !== 'null'),
                     Effect.fromNullable,
                     Effect.map(Array.map(generateRootInner)),
                     Effect.andThen(Effect.all),
