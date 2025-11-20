@@ -1,5 +1,7 @@
 # @majksa-openapi/effect
 
+## 0.3.16
+
 ## 0.3.15
 
 ### Patch Changes
