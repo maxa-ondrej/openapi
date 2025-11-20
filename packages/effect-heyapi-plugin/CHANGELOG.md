@@ -1,5 +1,14 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.3.17
+
+### Patch Changes
+
+- [`081fbe5`](https://github.com/maxa-ondrej/openapi/commit/081fbe5445b1bb0f25e4f275cae3fc5e9c607681) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - upgrade dependencies
+
+- Updated dependencies [[`081fbe5`](https://github.com/maxa-ondrej/openapi/commit/081fbe5445b1bb0f25e4f275cae3fc5e9c607681)]:
+  - @majksa-openapi/effect@0.3.17
+
 ## 0.3.16
 
 ### Patch Changes
