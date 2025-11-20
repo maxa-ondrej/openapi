@@ -1,5 +1,14 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.3.16
+
+### Patch Changes
+
+- [`92b133e`](https://github.com/maxa-ondrej/openapi/commit/92b133e39dc495eeef8309af7a71fa11777c58af) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - enhance null handling in generateRootInner by using Union for OptionFromNullOr
+
+- Updated dependencies []:
+  - @majksa-openapi/effect@0.3.16
+
 ## 0.3.15
 
 ### Patch Changes
