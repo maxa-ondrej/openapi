@@ -254,10 +254,18 @@ const generateRootInner = (
               Match.value(op).pipe(
                 Match.when('or', () =>
                   schema.items?.find((value) => value.type === 'null')
-                    ? Function.createMethodCall(
-                        schemaNamespace,
-                        'OptionFromNullOr',
-                      )
+                    ? (args: ts.Expression[]) =>
+                        pipe(
+                          args,
+                          Function.createMethodCall(schemaNamespace, 'Union'),
+                          Effect.map(Array.of),
+                          Effect.andThen(
+                            Function.createMethodCall(
+                              schemaNamespace,
+                              'OptionFromNullOr',
+                            ),
+                          ),
+                        )
                     : Function.createMethodCall(schemaNamespace, 'Union'),
                 ),
                 Match.when('and', () =>
