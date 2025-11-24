@@ -38,9 +38,9 @@
     }
   },
   "devDependencies": {
-    "@effect/cluster": "0.53.1",
+    "@effect/cluster": "0.53.5",
     "@effect/experimental": "0.57.4",
-    "@effect/platform-node": "0.101.0",
+    "@effect/platform-node": "0.101.1",
     "@effect/rpc": "0.72.2",
     "@effect/sql": "0.48.0"
   }
