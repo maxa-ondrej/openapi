@@ -56,8 +56,9 @@ const generateParamSchema = (
     ),
   );
 
-const createFetch =
-  (isStreamed: boolean, data: DataSchemas) => (wrapperName: string) =>
+const createUseWrapper =
+  (type: 'subscribe' | 'fetch' | 'invalidate', data: DataSchemas) =>
+  (wrapperName: string) =>
     Effect.succeed(data).pipe(
       Effect.bind('pathSchema', ({ path }) => generateParamSchema(path)),
       Effect.bind('querySchema', ({ query }) => generateParamSchema(query)),
@@ -81,7 +82,7 @@ const createFetch =
       Effect.andThen(
         Function.createMethodCall(
           ts.factory.createIdentifier(wrapperName),
-          isStreamed ? 'subscribe' : 'fetch',
+          type,
         ),
       ),
     );
@@ -177,6 +178,33 @@ const combineToOperation = (
           ts.factory.createIdentifier(`Effect.withSpan('${id}')`),
           extract,
         ],
+      ),
+    ),
+  );
+
+const invalidateQuery = (
+  createInvalidate: (wrapperName: string) => Effect.Effect<ts.Expression>,
+  useInvalidate: (fnName: string) => Effect.Effect<ts.Expression>,
+  provideLayers: boolean,
+) =>
+  Effect.Do.pipe(
+    Effect.bind('wrapper', () => effectMap('wrapper', createInvalidate)),
+    Effect.bind('invalidate', () => effectMap('invalidate', useInvalidate)),
+    Effect.bind('extract', () =>
+      Function.createMethodCall(
+        ts.factory.createIdentifier('Wrapper'),
+        provideLayers ? 'extractCallableAndProvide' : 'extractCallable',
+      )(
+        provideLayers
+          ? Array.of(ts.factory.createIdentifier('ClientLayer'))
+          : Array.empty(),
+      ),
+    ),
+    Effect.map(({ wrapper, invalidate, extract }) =>
+      ts.factory.createCallExpression(
+        ts.factory.createIdentifier('Wrapper.Wrapper.pipe'),
+        undefined,
+        [wrapper, invalidate, extract],
       ),
     ),
   );
@@ -405,7 +433,11 @@ export const operation: OnOperation = ({ operation, method, path }) =>
       response,
       errors: yield* extractErrors(operation),
     } satisfies DataSchemas;
-    const createableFetch = createFetch(streamed, data);
+    const createableFetch = createUseWrapper(
+      streamed ? 'subscribe' : 'fetch',
+      data,
+    );
+    const createableInvalidate = createUseWrapper('invalidate', data);
     const useableFetch = useFetch(path, knownMethod, data);
     const node = yield* combineToOperation(
       createableFetch,
@@ -423,6 +455,12 @@ export const operation: OnOperation = ({ operation, method, path }) =>
       Effect.andThen(Module.createConstExport(name)),
     );
 
+    const invalidator = yield* invalidateQuery(
+      createableInvalidate,
+      useableFetch,
+      context.plugin.provideLayers ?? defaultConfig.provideLayers,
+    ).pipe(Effect.andThen(Module.createConstExport(name)));
+
     yield* Comment.addLeadingComments({
       node,
       comments: [
@@ -437,5 +475,6 @@ export const operation: OnOperation = ({ operation, method, path }) =>
     });
     yield* context.addToNamespace(tag, node);
     yield* context.addToNamespace(`${tag}Defaults`, defaults);
+    yield* context.addToNamespace(`${tag}Invalidate`, invalidator);
     yield* Effect.logInfo(`< Finished processing operation ${operation.id}`);
   });

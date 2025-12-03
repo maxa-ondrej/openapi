@@ -86,6 +86,22 @@ export class Wrapper extends Context.Tag('ApiClientEffectWrapper')<
       | Error.PlatformError,
       HttpClient.HttpClient | Config | KeyValueStore.KeyValueStore
     >;
+    invalidate: <
+      Path,
+      Query,
+      Body,
+      P,
+      Q,
+      Response,
+      R,
+      E extends Record<string, Schema.Schema.AnyNoContext>,
+    >(
+      schemas: Schemas<Path, Query, Body, P, Q, Response, R, E>,
+    ) => (
+      base: BaseData<Path, Query, Body>,
+    ) => (
+      data: Data<Path, Query, Body>,
+    ) => Effect.Effect<void, Error.PlatformError, KeyValueStore.KeyValueStore>;
     subscribe: <
       Path,
       Query,
@@ -144,7 +160,16 @@ export const createPathFromTemplate = (
     ),
   );
 
-const executeRequest =
+const createQueryKey =
+  <Path, Query, Body>(base: BaseData<Path, Query, Body>) =>
+  (data: Data<Path, Query, Body>) =>
+    JSON.stringify({
+      ...base,
+      ...data,
+      staleTime: undefined,
+    });
+
+const createRequest =
   <
     Path,
     Query,
@@ -158,15 +183,12 @@ const executeRequest =
     bodyEncoder,
     pathParamsEncoder,
     queryParamsEncoder,
-    errorsDecoder,
-  }: Schemas<Path, Query, Body, P, Q, Response, R, E>) =>
+  }: Omit<Schemas<Path, Query, Body, P, Q, Response, R, E>, 'errorsDecoder'>) =>
   (base: BaseData<Path, Query, Body>) =>
   (data: Data<Path, Query, Body>) =>
     HttpClient.HttpClient.pipe(
-      Effect.tap(() => Effect.logDebug('🚀 Executing Request')),
       Effect.bindTo('client'),
       Effect.bind('config', () => Config.pipe(Effect.andThen(Ref.get))),
-      Effect.tap(({ config }) => Effect.logDebug('⚙️ Api Config', config)),
       Effect.bind('path', () =>
         pipe(
           Option.fromNullable('path' in data ? data.path : null),
@@ -194,7 +216,7 @@ const executeRequest =
       Effect.let('url', ({ config, path }) =>
         createPathFromTemplate(config.baseUrl + base.url, path),
       ),
-      Effect.let('request', ({ url, query, body, config }) =>
+      Effect.map(({ url, query, body, config }) =>
         HttpClientRequest.make(base.method)(url).pipe(
           HttpClientRequest.setBody(body),
           HttpClientRequest.appendUrlParams(query),
@@ -203,7 +225,28 @@ const executeRequest =
           ),
         ),
       ),
-      Effect.let('queryKey', ({ request }) => request.hash),
+    );
+
+const executeRequest =
+  <
+    Path,
+    Query,
+    Body,
+    P,
+    Q,
+    Response,
+    R,
+    E extends Record<string, Schema.Schema.AnyNoContext>,
+  >({
+    errorsDecoder,
+    ...encoders
+  }: Schemas<Path, Query, Body, P, Q, Response, R, E>) =>
+  (base: BaseData<Path, Query, Body>) =>
+  (data: Data<Path, Query, Body>) =>
+    HttpClient.HttpClient.pipe(
+      Effect.tap(() => Effect.logDebug('🚀 Executing Request')),
+      Effect.bindTo('client'),
+      Effect.bind('request', () => createRequest(encoders)(base)(data)),
       Effect.andThen(({ client, request }) => client.execute(request)),
       Effect.andThen(
         HttpClientResponse.matchStatus({
@@ -218,71 +261,125 @@ const executeRequest =
       ),
     );
 
+const CacheStore = <
+  Path,
+  Query,
+  Body,
+  P,
+  Q,
+  Response,
+  R,
+  E extends Record<string, Schema.Schema.AnyNoContext>,
+>(
+  responseDecoder: Schemas<
+    Path,
+    Query,
+    Body,
+    P,
+    Q,
+    Response,
+    R,
+    E
+  >['responseDecoder'],
+) =>
+  KeyValueStore.KeyValueStore.pipe(
+    Effect.andThen(KeyValueStore.prefix('majksa.openapi.effect:')),
+    Effect.andThen((kv) =>
+      kv.forSchema(
+        Schema.Struct({
+          date: Schema.DateTimeUtc,
+          data: responseDecoder,
+        }),
+      ),
+    ),
+  );
+
 export const WrapperLive = Layer.succeed(
   Wrapper,
   Wrapper.of({
     fetch: (schemas) => (base) => (data) =>
-      Effect.gen(function* () {
-        const kv = KeyValueStore.prefix('majksa.openapi.effect:')(
-          yield* KeyValueStore.KeyValueStore,
-        );
-        const store = kv.forSchema(
-          Schema.Struct({
-            date: Schema.DateTimeUtc,
-            data: schemas.responseDecoder,
-          }),
-        );
-        const config = yield* Effect.flatten(ApiConfig.Config);
-        const staleTime = Option.fromNullable(data.staleTime).pipe(
-          Option.map(Duration.decode),
-          Option.orElse(() => config.staleTime),
-        );
-        Effect.logDebug('🔍 Stale Time', staleTime);
-        const mergedInput = {
-          ...base,
-          ...data,
-          staleTime: undefined,
-        };
-        const queryKey = JSON.stringify(mergedInput);
-        Effect.logDebug('🔍 Query Key', queryKey);
-        const cached = yield* store.get(queryKey);
-        if (Option.isSome(cached)) {
-          Effect.logDebug('🔍 Cache Hit');
-          const { date, data: response } = cached.value;
-          Effect.logDebug(
-            '🔍 Cache Date',
-            date,
-            Option.isSome(staleTime) &&
-              (yield* DateTime.isFuture(
-                DateTime.addDuration(date, staleTime.value),
-              ))
-              ? '🥦 FRESH'
-              : '🍅 STALE',
-          );
-          if (
-            Option.isSome(staleTime) &&
-            (yield* DateTime.isFuture(
-              DateTime.addDuration(date, staleTime.value),
-            ))
-          ) {
-            return response;
-          }
-        }
-        const response = yield* executeRequest(schemas)(base)(data).pipe(
-          Effect.andThen(parseSync),
-          Effect.andThen((response) =>
-            pipe(response, Schema.decodeUnknown(schemas.responseDecoder)),
+      Effect.Do.pipe(
+        Effect.bind('store', () => CacheStore(schemas.responseDecoder)),
+        Effect.bind('config', () => Effect.flatten(ApiConfig.Config)),
+        Effect.let('staleTime', ({ config }) =>
+          Option.fromNullable(data.staleTime).pipe(
+            Option.map(Duration.decode),
+            Option.orElse(() => config.staleTime),
           ),
-          Effect.scoped,
-        );
-        if (Option.isSome(staleTime)) {
-          yield* store.set(queryKey, {
-            date: yield* DateTime.now,
-            data: response,
-          });
-        }
-        return response;
-      }),
+        ),
+        Effect.tap(({ staleTime }) =>
+          Effect.logDebug('🔍 Stale Time', staleTime),
+        ),
+        Effect.let('key', () => createQueryKey(base)(data)),
+        Effect.tap(({ key }) => Effect.logDebug('🔍 Query Key', key)),
+        Effect.bind('cached', ({ store, key }) => store.get(key)),
+        Effect.bind('cachedResponse', ({ cached, staleTime }) =>
+          Option.match(cached, {
+            onSome: ({ date, data }) =>
+              Effect.Do.pipe(
+                Effect.bind('isFresh', () =>
+                  staleTime.pipe(
+                    Option.map((staleTime) =>
+                      DateTime.addDuration(date, staleTime),
+                    ),
+                    Option.map(DateTime.isFuture),
+                    Option.getOrElse(() => Effect.succeed(false)),
+                  ),
+                ),
+                Effect.tap(({ isFresh }) =>
+                  Effect.logDebug(
+                    '🔍 Cache Entry Found',
+                    { expiresAt: date },
+                    isFresh ? '🥦 FRESH' : '🍅 STALE',
+                  ),
+                ),
+                Effect.map(({ isFresh }) =>
+                  isFresh ? Option.some(data) : Option.none(),
+                ),
+              ),
+            onNone: () =>
+              Effect.Do.pipe(
+                Effect.tap(() => Effect.logDebug('🔍 No Cache Entry Found')),
+                Effect.map(() => Option.none()),
+              ),
+          }),
+        ),
+        Effect.andThen(({ cachedResponse, staleTime, store, key }) =>
+          cachedResponse.pipe(
+            Option.map(Effect.succeed),
+            Option.getOrElse(() =>
+              executeRequest(schemas)(base)(data).pipe(
+                Effect.andThen(parseSync),
+                Effect.andThen((response) =>
+                  pipe(response, Schema.decodeUnknown(schemas.responseDecoder)),
+                ),
+                Effect.scoped,
+                Effect.tap((response) =>
+                  staleTime.pipe(
+                    Option.map(() =>
+                      DateTime.now.pipe(
+                        Effect.andThen((date) =>
+                          store.set(key, {
+                            date,
+                            data: response,
+                          }),
+                        ),
+                      ),
+                    ),
+                    Option.getOrElse(() => Effect.void),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    invalidate: (schemas) => (base) => (data) =>
+      CacheStore(schemas.responseDecoder).pipe(
+        Effect.bindTo('store'),
+        Effect.let('key', () => createQueryKey(base)(data)),
+        Effect.tap(({ store, key }) => store.remove(key)),
+      ),
     subscribe: (schemas) => (base) => (data) =>
       executeRequest(schemas)(base)(data).pipe(
         Effect.andThen(parseStream),
