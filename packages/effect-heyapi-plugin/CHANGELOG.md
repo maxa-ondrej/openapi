@@ -1,5 +1,14 @@
 # @majksa-openapi/effect-heyapi-plugin
 
+## 0.3.18
+
+### Patch Changes
+
+- [`10f3cdf`](https://github.com/maxa-ondrej/openapi/commit/10f3cdfd86668d11a0de211b3c4b66c3bc3699b3) Thanks [@maxa-ondrej](https://github.com/maxa-ondrej)! - Add a posibility to invalidate query data
+
+- Updated dependencies [[`10f3cdf`](https://github.com/maxa-ondrej/openapi/commit/10f3cdfd86668d11a0de211b3c4b66c3bc3699b3)]:
+  - @majksa-openapi/effect@0.3.18
+
 ## 0.3.17
 
 ### Patch Changes
