@@ -24,7 +24,7 @@
     "@changesets/changelog-github": "0.5.2",
     "@changesets/cli": "2.29.8",
     "@effect/build-utils": "0.8.9",
-    "@effect/language-service": "0.57.1",
+    "@effect/language-service": "0.59.0",
     "@effect/platform": "0.93.6",
     "@effect/vitest": "0.27.0",
     "@types/node": "24.10.1",
@@ -33,6 +33,6 @@
     "husky": "9.1.7",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "vitest": "4.0.14"
+    "vitest": "4.0.15"
   }
 }
